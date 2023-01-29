@@ -18,12 +18,12 @@ plugins {
 
 android {
     namespace 'com.example.ethweb3j'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.example.ethweb3j"
         minSdk 21
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.0"
 
@@ -43,6 +43,12 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    buildFeatures {
+
+        viewBinding = true
+        dataBinding = true
+    }
 }
 
 dependencies {
@@ -59,6 +65,12 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:2.44"
 
     implementation ('org.web3j:core:4.8.7-android')
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
+
+    implementation "io.insert-koin:koin-android:3.2.0"
+
+
 }
 
 kapt {
