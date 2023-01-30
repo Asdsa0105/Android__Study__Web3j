@@ -92,11 +92,15 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+        binding.buttonBalance.setOnClickListener {
 
+            viewModel.retrieveBalance(this)
+        }
 
+        binding.buttonSend.setOnClickListener {
 
-
-
+            viewModel.makeTransaction(binding.editEthToSend.text.toString().toDouble())
+        }
     }
 
 

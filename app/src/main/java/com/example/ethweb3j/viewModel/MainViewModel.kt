@@ -29,10 +29,12 @@ class MainViewModel : ViewModel(
 
 ) {
 
+
     var web3 : Web3j? = null
     var walletName : String = "wallet-name"
     var credentials: Credentials? = null
     val getBalance : MutableLiveData<String> = MutableLiveData()
+
 
     init {
 
@@ -58,12 +60,17 @@ class MainViewModel : ViewModel(
 
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "connected!!!", Toast.LENGTH_SHORT).show()
+
+                        Log.d("log_connect", "connected")
+
                     }
 
                 } else {
 
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, clientVersion.error.message, Toast.LENGTH_SHORT).show()
+                        Log.d("log_connect", "error: "+clientVersion.error.message)
+
                     }
                 }
 
@@ -93,12 +100,20 @@ class MainViewModel : ViewModel(
 
                 )?.sendAsync()?.get()
 
+
+
                 getBalance.postValue(balanceWei?.balance.toString())
+
+
+                Log.d("log_balance", "balance: "+balanceWei?.balance.toString())
+
 
             } catch (exception : Exception) {
 
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "balance error occurred!", Toast.LENGTH_SHORT).show()
+
+                    Log.d("log_balance", "error: "+ exception.message.toString())
                 }
             }
         }
@@ -129,7 +144,7 @@ class MainViewModel : ViewModel(
         }
     }
 
-    fun makeTransaction (value: Int) {
+    fun makeTransaction (value: Double) {
 
         viewModelScope.launch(Dispatchers.IO) {
 
@@ -138,7 +153,7 @@ class MainViewModel : ViewModel(
                 val receipt : TransactionReceipt = Transfer.sendFunds(
                     web3,
                     credentials,
-                    "0x21ff",
+                    credentials?.address.toString(),
                     BigDecimal.valueOf(value.toLong()),
                     Convert.Unit.ETHER
                 ).send()
@@ -147,6 +162,8 @@ class MainViewModel : ViewModel(
 
 
             } catch (exception : Exception) {
+
+                Log.d("log_makeTransaction", "transaction failed: "+ exception.message.toString())
 
             }
         }
