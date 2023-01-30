@@ -8,9 +8,12 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import com.example.ethweb3j.databinding.ActivityMainBinding
 import com.example.ethweb3j.entity.Wallet
+import com.example.ethweb3j.model.Response
 import com.example.ethweb3j.viewModel.MainViewModel
 import kotlinx.coroutines.*
 import org.bouncycastle.jce.provider.BouncyCastleProvider
@@ -88,7 +91,40 @@ class MainActivity : AppCompatActivity() {
 
         binding.buttonConnectToNode.setOnClickListener {
 
-            viewModel.connectToEthNetwork(this)
+
+            lifecycleScope.launchWhenResumed {
+
+
+
+                val response = viewModel.connectToEthNetwork()
+
+                Toast.makeText(this@MainActivity, "Now Connecting...", Toast.LENGTH_SHORT).show()
+
+                when(response) {
+
+                    is Response.Success -> {
+
+                        Toast.makeText(this@MainActivity, "connected!!!", Toast.LENGTH_SHORT).show()
+                    }
+                    is Response.Failure -> {
+
+                        Toast.makeText(this@MainActivity, response.data, Toast.LENGTH_SHORT).show()
+                    }
+                    is Response.Error -> {
+
+                        Toast.makeText(this@MainActivity, response.exception?.message, Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+
+                        Toast.makeText(this@MainActivity, "else", Toast.LENGTH_SHORT).show()
+                    }
+
+
+                }
+            }
+
+
+
 
         }
 

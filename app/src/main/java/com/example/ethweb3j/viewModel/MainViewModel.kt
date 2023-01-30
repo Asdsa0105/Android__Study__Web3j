@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ethweb3j.model.Response
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,48 +44,29 @@ class MainViewModel : ViewModel(
 
     }
 
-    fun connectToEthNetwork (context: Context) {
+    fun connectToEthNetwork () :Response<String> {
 
-        viewModelScope.launch(Dispatchers.IO) {
+        try {
 
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Now connecting...", Toast.LENGTH_SHORT).show()
+            val clientVersion : Web3ClientVersion? =
+                web3?.web3ClientVersion()?.sendAsync()?.get()
+
+            if (!clientVersion?.hasError()!!) {
+
+                return Response.Success(Response.SUCCESS_STRING)
+
+
+            } else {
+
+                return Response.Failure(clientVersion.error.message)
             }
 
-            try {
+        } catch (exception: Exception) {
 
-                val clientVersion : Web3ClientVersion? =
-                    web3?.web3ClientVersion()?.sendAsync()?.get()
-
-                if (!clientVersion?.hasError()!!) {
-
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "connected!!!", Toast.LENGTH_SHORT).show()
-
-                        Log.d("log_connect", "connected")
-
-                    }
-
-                } else {
-
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, clientVersion.error.message, Toast.LENGTH_SHORT).show()
-                        Log.d("log_connect", "error: "+clientVersion.error.message)
-
-                    }
-                }
-
-            } catch (exception: Exception) {
-
-
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, exception.message.toString(), Toast.LENGTH_SHORT).show()
-                }
-
-            }
-
+            return Response.Error(exception)
 
         }
+
     }
 
     fun retrieveBalance ( context: Context ) {
